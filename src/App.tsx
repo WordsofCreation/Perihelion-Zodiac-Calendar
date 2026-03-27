@@ -1,62 +1,94 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { AboutPanel } from './components/AboutPanel';
+import { ComparisonPanel } from './components/ComparisonPanel';
 import { ConversionPanel } from './components/ConversionPanel';
+import { DetailInspector } from './components/DetailInspector';
+import { MonthSignTable } from './components/MonthSignTable';
 import { OrbitWheel } from './components/OrbitWheel';
 import { TimeSystemPanel } from './components/TimeSystemPanel';
 import { TimelineScrubber } from './components/TimelineScrubber';
-import { CalendarConfig, DEFAULT_ZODIAC_ORDER, gregorianToCustom } from './utils/calendarMath';
+import { DEFAULT_PRESET_YEAR, PERIHELION_PRESETS, findPresetByYear } from './data/perihelionPresets';
+import { DEFAULT_CUSTOM_ZODIAC_ORDER } from './data/zodiac';
+import { CalendarConfig, gregorianToCustom, gregorianToSidereal, gregorianToTropical, normalizeZodiacOrder } from './utils/calendarMath';
 
-const DEFAULT_PERIHELION = '2026-01-04T16:17:00Z';
-
-function normalizeSigns(raw: string): string[] {
-  const parsed = raw
-    .split(',')
-    .map((value) => value.trim())
-    .filter(Boolean);
-
-  if (parsed.length !== 12) {
-    return DEFAULT_ZODIAC_ORDER;
-  }
-
-  return parsed;
-}
+type ComparisonState = Record<'perihelion' | 'tropical' | 'sidereal' | 'gregorian', boolean>;
 
 export default function App() {
-  const [perihelionIso, setPerihelionIso] = useState(DEFAULT_PERIHELION);
-  const [zodiacRaw, setZodiacRaw] = useState(DEFAULT_ZODIAC_ORDER.join(', '));
+  const defaultPreset = findPresetByYear(DEFAULT_PRESET_YEAR) ?? PERIHELION_PRESETS[0];
+
+  const [selectedYear, setSelectedYear] = useState(defaultPreset.year);
+  const [manualOverride, setManualOverride] = useState(false);
+  const [perihelionIso, setPerihelionIso] = useState(defaultPreset.iso);
+  const [zodiacRaw, setZodiacRaw] = useState(DEFAULT_CUSTOM_ZODIAC_ORDER.join(', '));
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [sliderDay, setSliderDay] = useState(0);
-  const [comparison, setComparison] = useState({
+  const [comparison, setComparison] = useState<ComparisonState>({
     perihelion: true,
-    tropical: false,
-    sidereal: false,
+    tropical: true,
+    sidereal: true,
     gregorian: true
   });
+
+  useEffect(() => {
+    if (manualOverride) {
+      return;
+    }
+    const preset = findPresetByYear(selectedYear);
+    if (preset) {
+      setPerihelionIso(preset.iso);
+    }
+  }, [selectedYear, manualOverride]);
 
   const config: CalendarConfig = useMemo(
     () => ({
       perihelionIso,
-      zodiacOrder: normalizeSigns(zodiacRaw)
+      zodiacOrder: normalizeZodiacOrder(zodiacRaw)
     }),
     [perihelionIso, zodiacRaw]
   );
 
-  const nowCustom = gregorianToCustom(new Date(), config);
+  const custom = useMemo(() => gregorianToCustom(selectedDate, config), [selectedDate, config]);
+  const tropical = useMemo(() => gregorianToTropical(selectedDate), [selectedDate]);
+  const sidereal = useMemo(() => gregorianToSidereal(selectedDate), [selectedDate]);
+
+  useEffect(() => {
+    setSliderDay(custom.fractionElapsed * 360);
+  }, [custom.fractionElapsed]);
 
   return (
     <main className="app-shell">
       <header>
-        <h1>Perihelion Zodiac Calendar</h1>
+        <h1>Perihelion Zodiac Calendar • Phase 2</h1>
         <p>
-          A designed, perihelion-anchored model: 360 equal days, 12 zodiac months, and mean anomalistic timing.
+          A perihelion-anchored exploratory instrument comparing a custom 360-day calendar with tropical, sidereal,
+          and Gregorian frames.
         </p>
       </header>
 
       <section className="panel">
-        <h2>Settings</h2>
+        <h2>Settings & Year Anchors</h2>
         <div className="two-col">
+          <label>
+            Perihelion preset year
+            <select value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))}>
+              {PERIHELION_PRESETS.map((preset) => (
+                <option key={preset.year} value={preset.year}>
+                  {preset.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="toggle-label inline-setting">
+            <input type="checkbox" checked={manualOverride} onChange={(e) => setManualOverride(e.target.checked)} />
+            Manual perihelion override
+          </label>
+
           <label>
             Perihelion timestamp (UTC ISO)
             <input value={perihelionIso} onChange={(e) => setPerihelionIso(e.target.value)} />
           </label>
+
           <label>
             Zodiac order (comma-separated, exactly 12)
             <textarea value={zodiacRaw} onChange={(e) => setZodiacRaw(e.target.value)} rows={3} />
@@ -64,51 +96,31 @@ export default function App() {
         </div>
       </section>
 
-      <OrbitWheel degree={nowCustom.degree} zodiacOrder={config.zodiacOrder} dayOfYear={nowCustom.dayOfYear} />
-      <TimelineScrubber sliderDay={sliderDay} onSliderDay={setSliderDay} config={config} />
-      <ConversionPanel config={config} />
+      <ComparisonPanel
+        selectedDate={selectedDate}
+        custom={custom}
+        tropical={tropical}
+        sidereal={sidereal}
+        showLayer={comparison}
+        onToggleLayer={(key, checked) => setComparison((prev) => ({ ...prev, [key]: checked }))}
+      />
+
+      <OrbitWheel
+        degree={custom.degree}
+        tropicalDegree={tropical.degree}
+        siderealDegree={sidereal.degree}
+        zodiacOrder={config.zodiacOrder}
+        dayOfYear={custom.dayOfYear}
+        showTropical={comparison.tropical}
+        showSidereal={comparison.sidereal}
+      />
+
+      <TimelineScrubber sliderDay={sliderDay} onSliderDay={setSliderDay} config={config} onSelectedDateChange={setSelectedDate} />
+      <DetailInspector selectedDate={selectedDate} custom={custom} tropical={tropical} sidereal={sidereal} />
+      <MonthSignTable config={config} activeMonth={custom.month} />
+      <ConversionPanel config={config} selectedDate={selectedDate} onSelectedDateChange={setSelectedDate} />
       <TimeSystemPanel />
-
-      <section className="panel">
-        <h2>Comparison Toggles</h2>
-        <div className="toggle-row">
-          {(
-            [
-              ['perihelion', 'Perihelion calendar'],
-              ['tropical', 'Tropical zodiac reference'],
-              ['sidereal', 'Sidereal year reference'],
-              ['gregorian', 'Gregorian date reference']
-            ] as const
-          ).map(([key, label]) => (
-            <label key={key} className="toggle-label">
-              <input
-                type="checkbox"
-                checked={comparison[key]}
-                onChange={(e) => setComparison((prev) => ({ ...prev, [key]: e.target.checked }))}
-              />
-              {label}
-            </label>
-          ))}
-        </div>
-        <ul className="metric-list">
-          {comparison.perihelion && <li>Perihelion layer: active (0° begins at configured perihelion timestamp).</li>}
-          {comparison.tropical && <li>Tropical layer: informational overlay only in v1.</li>}
-          {comparison.sidereal && <li>Sidereal layer: informational overlay only in v1.</li>}
-          {comparison.gregorian && <li>Gregorian layer: local date/time context displayed in all panels.</li>}
-        </ul>
-      </section>
-
-      <section className="panel about">
-        <h2>About this system</h2>
-        <p>
-          This visualization starts each custom year at perihelion, divides the orbit into 360 equal custom days, and
-          groups them into 12 months of 30 days mapped to zodiac signs.
-        </p>
-        <p>
-          The day length uses a mean anomalistic-year basis (24h 21m 2.31s) so Day 360 lands at the next perihelion in
-          the conceptual model.
-        </p>
-      </section>
+      <AboutPanel />
     </main>
   );
 }

@@ -1,71 +1,94 @@
 # Perihelion Zodiac Calendar
 
-An interactive React + TypeScript web app that visualizes a **perihelion-anchored 360-day calendar**.
+An interactive React + TypeScript app for exploring a **perihelion-anchored 360-day calendar** against tropical, sidereal, and Gregorian references.
 
-## What this model does
+## Phase 2 highlights
 
-- Starts the custom year at a configurable perihelion timestamp.
-- Uses a **mean anomalistic-year abstraction**.
-- Splits the year into **360 equal custom days**.
-- Splits those days into **12 months of 30 days**, mapped to zodiac signs.
-- Defaults zodiac order to:
-  1. Capricorn
-  2. Aquarius
-  3. Pisces
-  4. Aries
-  5. Taurus
-  6. Gemini
-  7. Cancer
-  8. Leo
-  9. Virgo
-  10. Libra
-  11. Scorpio
-  12. Sagittarius
+Phase 2 upgrades the app from a prototype into a richer comparison and interpretation tool.
 
-> This is a designed conceptual calendar system for visualization. It does **not** replace UTC/civil timekeeping.
+### 1) Perihelion year presets + manual anchor override
 
-## Features
+- Added curated perihelion UTC presets for multiple recent/upcoming years (`2021` through `2029`).
+- Added a year selector for fast anchor switching.
+- Added manual perihelion override toggle + freeform ISO timestamp input.
+- Switching the year/anchor updates:
+  - orbit position
+  - custom calendar conversion
+  - day/month/sign outputs
+  - time-until-next-perihelion values
 
-1. **Orbit Wheel**
-   - 360° ring with 12 segments.
-   - Perihelion marker at 0°.
-   - Current position marker with smooth updates.
-   - Segment tooltips (sign, degree range, month, day range).
+## 2) Enhanced comparison layer
 
-2. **Calendar Conversion Panel**
-   - Gregorian date/time -> custom day/month/sign/degree.
-   - Fraction elapsed, time since perihelion, and time until next perihelion.
-   - Reverse conversion (custom month/day/fraction) -> approximate Gregorian timestamp.
+For a selected Gregorian timestamp, the app now displays side-by-side cards for:
 
-3. **Time System Panel**
-   - Standard vs custom day values side-by-side.
-   - Uses custom day length `24h 21m 2.31s`.
-   - Extra per-hour value displayed as `52.59625` seconds/hour.
+- Perihelion calendar (day/month/sign/degree)
+- Tropical zodiac (approx sign + degree)
+- Sidereal reference (approx sign + degree)
+- Gregorian date/time
 
-4. **Timeline / Year Scrubber**
-   - Slider across the full 360-day model year.
-   - Updates degree, sign/month, orbit position, and mapped Gregorian timestamp.
+Layer toggles control both cards and wheel overlays.
 
-5. **Comparison Toggles**
-   - Perihelion calendar overlay
-   - Tropical reference overlay (informational in v1)
-   - Sidereal reference overlay (informational in v1)
-   - Gregorian reference overlay
+## 3) Orbit wheel boundary layering
 
-## Core formulas
+The wheel now uses multiple visual rings:
 
-Located in `src/utils/calendarMath.ts`.
+- Outer ring: custom perihelion 12 equal months
+- Middle ring: tropical zodiac boundaries (dashed amber)
+- Inner ring: sidereal reference boundaries (dashed cyan)
 
-- `customDaySeconds = 24*3600 + 21*60 + 2.31`
-- `meanYearMs = 360 * customDaySeconds * 1000`
-- `fractionElapsed = ((t - perihelion) mod meanYearMs) / meanYearMs`
-- `degree = fractionElapsed * 360`
-- `monthIndex = floor(dayIndex / 30)` where `dayIndex = floor(fractionElapsed * 360)`
+Animated markers indicate active positions across systems.
 
-Reverse conversion approximation:
+## 4) Detail inspector panel
 
-- `offsetMs = (dayIndex + fractionWithinDay) * customDaySeconds * 1000`
-- `gregorian = perihelion + offsetMs`
+Added a scientific-style inspector for selected date/time:
+
+- Gregorian date/time
+- Perihelion day/month/sign
+- 360-model degree
+- anomalistic-year fraction elapsed
+- tropical/sidereal degree references
+- perihelion-vs-tropical offset note
+
+## 5) Month/sign reference table
+
+New full table for the custom 12-month system:
+
+- month number
+- sign name
+- custom day range
+- degree range
+- approximate Gregorian start/end for current perihelion year
+
+The active month row highlights as the selected date changes.
+
+## 6) Expanded explanation layer
+
+The about section now covers:
+
+- anomalistic year
+- perihelion anchor logic
+- why the custom day is longer than 24h
+- mathematical elegance of equal segmentation
+- limits vs real unequal constellations
+- interpretive scope (not civil-time replacement)
+
+## 7) UI polish
+
+- smoother marker animation
+- cleaner card and table layouts
+- stronger typography hierarchy
+- improved spacing and visual grouping
+- better mobile responsiveness while keeping the dark cosmic style
+
+## Astronomical precision scope (current phase)
+
+This phase intentionally uses modular approximations (not a full ephemeris engine):
+
+- custom system: mean anomalistic-year abstraction
+- tropical reference: equinox-anchored approximation
+- sidereal reference: sidereal-year approximation + fixed ayanamsa offset
+
+The code is structured to let future phases replace these with more exact formulas.
 
 ## Setup
 
@@ -83,18 +106,20 @@ npm run preview
 
 ## Project structure
 
-- `src/utils/calendarMath.ts`: calendar and conversion math.
-- `src/components/OrbitWheel.tsx`: orbital wheel visualization.
-- `src/components/ConversionPanel.tsx`: Gregorian/custom conversions.
-- `src/components/TimeSystemPanel.tsx`: custom time-system display.
-- `src/components/TimelineScrubber.tsx`: year slider and mapping.
-- `src/App.tsx`: settings, comparison toggles, composition.
+- `src/data/perihelionPresets.ts`: perihelion preset dataset and helpers.
+- `src/data/zodiac.ts`: custom/tropical zodiac ordering.
+- `src/data/comparisonMeta.ts`: comparison layer metadata.
+- `src/utils/calendarMath.ts`: calendar + comparison math utilities.
+- `src/components/OrbitWheel.tsx`: layered orbit comparison visualization.
+- `src/components/ComparisonPanel.tsx`: side-by-side comparison cards.
+- `src/components/DetailInspector.tsx`: detailed readout panel.
+- `src/components/MonthSignTable.tsx`: active month/sign reference table.
+- `src/components/ConversionPanel.tsx`: Gregorian/custom conversion tools.
+- `src/components/TimelineScrubber.tsx`: interactive date scrubber.
+- `src/components/TimeSystemPanel.tsx`: day/year-length comparison metrics.
+- `src/components/AboutPanel.tsx`: educational explanation panel.
+- `src/App.tsx`: phase orchestration, controls, and state wiring.
 
-## Configuration
+## Notes
 
-Inside the app's **Settings** panel:
-
-- Edit perihelion timestamp as UTC ISO string.
-- Edit zodiac order via comma-separated list of exactly 12 signs.
-
-If the zodiac list is invalid, the app falls back to the default zodiac sequence.
+This project is a designed interpretive astronomy-calendar visualization and should not be used as a civil-time authority or high-precision astrometric engine.

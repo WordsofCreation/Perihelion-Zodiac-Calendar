@@ -1,8 +1,11 @@
 import {
+  ANOMALISTIC_YEAR_DAYS,
   CUSTOM_DAY_SECONDS,
   EXTRA_DAY_SECONDS,
   EXTRA_SECONDS_PER_HOUR,
-  STANDARD_DAY_SECONDS
+  SIDEREAL_YEAR_DAYS,
+  STANDARD_DAY_SECONDS,
+  TROPICAL_YEAR_DAYS
 } from '../utils/calendarMath';
 
 export function TimeSystemPanel() {
@@ -20,34 +23,35 @@ export function TimeSystemPanel() {
           </ul>
         </div>
         <div>
-          <h3>Representation</h3>
-          <p>UTC hour tick: 3,600 s</p>
-          <p>Custom hour tick: {(CUSTOM_DAY_SECONDS / 24).toFixed(5)} s</p>
-          <p>
-            This model applies a mean anomalistic-year abstraction for design clarity, not for replacing UTC civil
-            timekeeping.
-          </p>
+          <h3>Year-length comparison</h3>
           <table className="compare-table">
             <thead>
               <tr>
-                <th>System</th>
-                <th>One Day</th>
-                <th>One Hour</th>
+                <th>Year model</th>
+                <th>Days</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>Standard</td>
-                <td>{STANDARD_DAY_SECONDS.toFixed(2)} s</td>
-                <td>3600.00000 s</td>
+                <td>Anomalistic (model basis)</td>
+                <td>{ANOMALISTIC_YEAR_DAYS.toFixed(6)}</td>
               </tr>
               <tr>
-                <td>Perihelion</td>
-                <td>{CUSTOM_DAY_SECONDS.toFixed(2)} s</td>
-                <td>{(CUSTOM_DAY_SECONDS / 24).toFixed(5)} s</td>
+                <td>Tropical</td>
+                <td>{TROPICAL_YEAR_DAYS.toFixed(6)}</td>
+              </tr>
+              <tr>
+                <td>Sidereal</td>
+                <td>{SIDEREAL_YEAR_DAYS.toFixed(6)}</td>
               </tr>
             </tbody>
           </table>
+          <p>
+            This phase keeps clean approximations and a modular structure so future ephemeris-grade formulas can be
+            dropped in without UI rewrites.
+          </p>
+          <p>Reference hour in custom model: {(CUSTOM_DAY_SECONDS / 24).toFixed(5)} s.</p>
+          <p>Reference hour in civil time: {STANDARD_DAY_SECONDS / 24} s.</p>
         </div>
       </div>
     </section>

@@ -1,3 +1,5 @@
+import { DEFAULT_CUSTOM_ZODIAC_ORDER, TROPICAL_ZODIAC_ORDER } from '../data/zodiac';
+
 export const CUSTOM_YEAR_DAYS = 360;
 export const MONTHS = 12;
 export const DAYS_PER_MONTH = 30;
@@ -7,20 +9,12 @@ export const STANDARD_DAY_SECONDS = 24 * 3600;
 export const EXTRA_DAY_SECONDS = CUSTOM_DAY_SECONDS - STANDARD_DAY_SECONDS;
 export const EXTRA_SECONDS_PER_HOUR = EXTRA_DAY_SECONDS / 24;
 
-export const DEFAULT_ZODIAC_ORDER = [
-  'Capricorn',
-  'Aquarius',
-  'Pisces',
-  'Aries',
-  'Taurus',
-  'Gemini',
-  'Cancer',
-  'Leo',
-  'Virgo',
-  'Libra',
-  'Scorpio',
-  'Sagittarius'
-];
+export const TROPICAL_YEAR_DAYS = 365.2422;
+export const SIDEREAL_YEAR_DAYS = 365.25636;
+export const ANOMALISTIC_YEAR_DAYS = (CUSTOM_YEAR_DAYS * CUSTOM_DAY_SECONDS) / STANDARD_DAY_SECONDS;
+
+// Fixed reference for this phase (designed approximation, not high-precision ephemeris).
+export const SIDEREAL_AYANAMSA_DEGREES = 24;
 
 export interface CalendarConfig {
   perihelionIso: string;
@@ -38,7 +32,16 @@ export interface CustomDateParts {
   untilNextPerihelionMs: number;
 }
 
+export interface ZodiacPosition {
+  degree: number;
+  sign: string;
+  degreeInSign: number;
+  fractionElapsed: number;
+}
+
 export const meanYearMs = CUSTOM_YEAR_DAYS * CUSTOM_DAY_SECONDS * 1000;
+const tropicalYearMs = TROPICAL_YEAR_DAYS * STANDARD_DAY_SECONDS * 1000;
+const siderealYearMs = SIDEREAL_YEAR_DAYS * STANDARD_DAY_SECONDS * 1000;
 
 const mod = (value: number, n: number): number => ((value % n) + n) % n;
 
@@ -50,9 +53,21 @@ export function parsePerihelionMs(perihelionIso: string): number {
   return ms;
 }
 
+export function normalizeZodiacOrder(raw: string): string[] {
+  const parsed = raw
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  if (parsed.length !== 12) {
+    return DEFAULT_CUSTOM_ZODIAC_ORDER;
+  }
+
+  return parsed;
+}
+
 /**
  * Maps a Gregorian timestamp to the designed perihelion calendar.
- * Formula: fraction = (t - perihelion) / anomalisticYearMean, wrapped to [0,1).
  */
 export function gregorianToCustom(target: Date, config: CalendarConfig): CustomDateParts {
   const perihelionMs = parsePerihelionMs(config.perihelionIso);
@@ -82,11 +97,40 @@ export function gregorianToCustom(target: Date, config: CalendarConfig): CustomD
   };
 }
 
-/**
- * Reverse conversion approximation.
- * Converts custom month/day/time fraction back into Gregorian timestamp:
- * target = perihelion + (customDayIndex + fracWithinDay) * customDayLength.
- */
+function approximateVernalEquinoxMs(gregorianYear: number): number {
+  // Stable approximation anchor for visualization workflows.
+  return Date.UTC(gregorianYear, 2, 20, 9, 0, 0);
+}
+
+function degreeToZodiac(degree: number, order: string[]): ZodiacPosition {
+  const wrappedDegree = mod(degree, 360);
+  const signIndex = Math.floor(wrappedDegree / 30);
+  const sign = order[signIndex] ?? `Sign ${signIndex + 1}`;
+  const degreeInSign = wrappedDegree - signIndex * 30;
+
+  return {
+    degree: wrappedDegree,
+    sign,
+    degreeInSign,
+    fractionElapsed: wrappedDegree / 360
+  };
+}
+
+export function gregorianToTropical(target: Date): ZodiacPosition {
+  const candidate = approximateVernalEquinoxMs(target.getUTCFullYear());
+  const anchorMs = target.getTime() >= candidate ? candidate : approximateVernalEquinoxMs(target.getUTCFullYear() - 1);
+  const elapsed = mod(target.getTime() - anchorMs, tropicalYearMs);
+  return degreeToZodiac((elapsed / tropicalYearMs) * 360, TROPICAL_ZODIAC_ORDER);
+}
+
+export function gregorianToSidereal(target: Date): ZodiacPosition {
+  const candidate = approximateVernalEquinoxMs(target.getUTCFullYear());
+  const anchorMs = target.getTime() >= candidate ? candidate : approximateVernalEquinoxMs(target.getUTCFullYear() - 1);
+  const elapsed = mod(target.getTime() - anchorMs, siderealYearMs);
+  const siderealDegree = (elapsed / siderealYearMs) * 360 - SIDEREAL_AYANAMSA_DEGREES;
+  return degreeToZodiac(siderealDegree, TROPICAL_ZODIAC_ORDER);
+}
+
 export function customToGregorian(
   month: number,
   dayOfMonth: number,

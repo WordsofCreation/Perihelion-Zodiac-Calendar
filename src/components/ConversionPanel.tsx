@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useMemo, useState } from 'react';
 import {
   CalendarConfig,
   CUSTOM_YEAR_DAYS,
@@ -10,21 +10,26 @@ import {
 
 interface ConversionPanelProps {
   config: CalendarConfig;
+  selectedDate: Date;
+  onSelectedDateChange: (date: Date) => void;
 }
 
-export function ConversionPanel({ config }: ConversionPanelProps) {
-  const nowIso = new Date().toISOString().slice(0, 16);
-  const [gregorianInput, setGregorianInput] = useState(nowIso);
+function toLocalInputValue(date: Date): string {
+  const offsetMs = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - offsetMs).toISOString().slice(0, 16);
+}
+
+export function ConversionPanel({ config, selectedDate, onSelectedDateChange }: ConversionPanelProps) {
   const [reverseMonth, setReverseMonth] = useState(1);
   const [reverseDay, setReverseDay] = useState(1);
   const [reverseFraction, setReverseFraction] = useState(0);
 
-  const gregorianDate = new Date(gregorianInput);
-  const custom = gregorianToCustom(gregorianDate, config);
+  const custom = useMemo(() => gregorianToCustom(selectedDate, config), [selectedDate, config]);
   const reverseDate = customToGregorian(reverseMonth, reverseDay, reverseFraction, config);
 
   const onReverseSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    onSelectedDateChange(reverseDate);
   };
 
   return (
@@ -37,13 +42,13 @@ export function ConversionPanel({ config }: ConversionPanelProps) {
             Gregorian date/time
             <input
               type="datetime-local"
-              value={gregorianInput}
-              onChange={(e) => setGregorianInput(e.target.value)}
+              value={toLocalInputValue(selectedDate)}
+              onChange={(e) => onSelectedDateChange(new Date(e.target.value))}
             />
           </label>
           <ul className="metric-list">
             <li>Custom day number: {custom.dayOfYear} / {CUSTOM_YEAR_DAYS}</li>
-            <li>Custom month: {custom.month}</li>
+            <li>Custom month/day: {custom.month} / {custom.dayOfMonth}</li>
             <li>Zodiac sign: {custom.sign}</li>
             <li>Orbital degree: {custom.degree.toFixed(3)}°</li>
             <li>Year elapsed: {(custom.fractionElapsed * 100).toFixed(3)}%</li>
@@ -74,8 +79,11 @@ export function ConversionPanel({ config }: ConversionPanelProps) {
                 onChange={(e) => setReverseFraction(Number(e.target.value))}
               />
             </label>
+            <button type="submit" className="primary-btn">Use as selected date</button>
           </form>
-          <p>Output Gregorian timestamp: <strong>{formatDateTime(reverseDate)}</strong></p>
+          <p>
+            Output Gregorian timestamp: <strong>{formatDateTime(reverseDate)}</strong>
+          </p>
         </div>
       </div>
     </section>

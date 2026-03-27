@@ -88,11 +88,14 @@ VITE_BASE_PATH=/ npm run build
 
 You can also point to another subpath by setting `VITE_BASE_PATH` to that path.
 
-## Deploy checklist (GitHub Pages project site)
+## Recommended GitHub Pages workflow
 
-1. In **Settings → Pages**, set **Build and deployment** to **GitHub Actions**.
-2. Keep `.github/workflows/deploy-pages.yml` on `main`; each push to `main` builds and deploys `dist/` automatically.
-3. Confirm generated asset URLs begin with `/Perihelion-Zodiac-Calendar/`.
-4. Confirm `sitemap.xml` and `robots.txt` point at the project-site URL.
+1. Build with `npm run build`.
+2. Upload the generated `dist/` folder as the Pages artifact in GitHub Actions.
+3. Deploy with `actions/deploy-pages`.
+4. In **Settings → Pages**, set **Source** to **GitHub Actions**.
+5. Keep `.github/workflows/deploy-pages.yml` on `main`; each push to `main` builds and deploys automatically.
+6. Confirm generated asset URLs begin with `/Perihelion-Zodiac-Calendar/`.
+7. Confirm `sitemap.xml` and `robots.txt` point at the project-site URL.
 
 If Pages is set to “Deploy from a branch”, GitHub will serve the repo source `index.html` directly (which references `/src/main.tsx`), and the browser will render a blank page because TypeScript/TSX source is not bundled for production.

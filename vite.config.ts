@@ -10,7 +10,12 @@ function normalizeBasePath(rawBase: string | undefined): string {
   return withTrailingSlash.replace(/\/+/g, '/');
 }
 
-export default defineConfig({
-  base: normalizeBasePath(process.env.VITE_BASE_PATH),
-  plugins: [react()]
+export default defineConfig(({ command }) => {
+  const configuredBase = normalizeBasePath(process.env.VITE_BASE_PATH);
+
+  return {
+    // Keep local dev on root while building project-site URLs for production.
+    base: command === 'serve' ? '/' : configuredBase,
+    plugins: [react()]
+  };
 });

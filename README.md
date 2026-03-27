@@ -72,7 +72,9 @@ This project is currently configured for a **GitHub Pages project site** at:
 
 - `https://wordsofcreation.github.io/Perihelion-Zodiac-Calendar/`
 
-Vite uses `/Perihelion-Zodiac-Calendar/` as the default `base`, so built assets resolve correctly from the repository subpath.
+Vite uses `/Perihelion-Zodiac-Calendar/` as the production `base`, so built assets resolve correctly from the repository subpath.
+
+For local development (`npm run dev`), Vite serves from root (`/`) so local routing and asset loading work normally.
 
 ## Future root-site deployment
 

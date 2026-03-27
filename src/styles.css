@@ -433,3 +433,152 @@ button,
 .marker-dot-sidereal {
   filter: drop-shadow(0 0 6px rgba(255, 214, 153, 0.5));
 }
+
+.site-shell {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 1rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.site-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: center;
+}
+
+.brand-link {
+  display: grid;
+  color: #eff3ff;
+  text-decoration: none;
+  gap: 0.2rem;
+}
+
+.brand-link span {
+  color: #9cb0e7;
+  font-size: 0.9rem;
+}
+
+.site-nav {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.site-nav a {
+  color: #d7e2ff;
+  text-decoration: none;
+  border: 1px solid #2f4074;
+  background: rgba(17, 29, 57, 0.78);
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.site-nav a.active {
+  background: linear-gradient(90deg, #2e5bff, #5f72ff);
+  border-color: #7288f6;
+}
+
+.site-main {
+  display: grid;
+  gap: 1rem;
+}
+
+.hero-story h1 {
+  margin: 0.25rem 0 0.6rem;
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+}
+
+.eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  color: #93abef;
+}
+
+.cta-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.home-orbit-preview .panel {
+  margin: 0;
+  padding: 0;
+}
+
+.principles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.pathway-grid h2 {
+  margin-bottom: 0.75rem;
+}
+
+.page-article {
+  display: grid;
+  gap: 1rem;
+}
+
+.page-intro {
+  color: #b5c4ef;
+  line-height: 1.6;
+}
+
+.content-block {
+  border-top: 1px solid #2b3f73;
+  padding-top: 0.8rem;
+}
+
+.content-block p,
+.notes-grid p {
+  color: #c9d6fb;
+  line-height: 1.6;
+}
+
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.8rem;
+}
+
+.mobile-nav-toggle {
+  display: none;
+  width: auto;
+  justify-self: end;
+}
+
+.site-footer p {
+  margin: 0;
+  color: #a9bce8;
+}
+
+@media (max-width: 900px) {
+  .site-header {
+    grid-template-columns: 1fr auto;
+  }
+
+  .mobile-nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.45rem 0.8rem;
+  }
+
+  .site-nav {
+    grid-column: 1 / -1;
+    display: none;
+    justify-content: flex-start;
+  }
+
+  .site-nav.open {
+    display: flex;
+  }
+}

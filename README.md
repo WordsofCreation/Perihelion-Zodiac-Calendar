@@ -1,121 +1,79 @@
 # Perihelion Zodiac Calendar
 
-A public-facing React + TypeScript explorer for a **perihelion-anchored calendar model**:
+A public-facing React + TypeScript website for the **Perihelion Zodiac Calendar**: an educational calendar model that starts each year at perihelion and maps the anomalistic cycle into a 360-day symbolic structure.
 
-- year starts at perihelion (anomalistic anchor)
-- 360 custom days
-- 12 equal zodiac months of 30 days each
-- overlays for tropical, sidereal, and optional constellation framing
+## Phase 5 overview (publishable website edition)
 
-## Phase 4 overview (publish-ready release)
+Phase 5 expands the project from an app-centric experience into a full multi-page publication layer with long-form educational content, comparison framing, notes/essays, roadmap planning, and SEO foundations.
 
-Phase 4 turns the project from prototype into a shareable exploration tool with URL state, local presets, export features, onboarding, and presentation polish.
+## Top-level site structure
 
-### Major modes
+- **Home** (`/`)
+- **Explorer** (`/explorer`)
+- **About the System** (`/about-system`)
+- **How It Works** (`/how-it-works`)
+- **Year Types / Astronomy** (`/year-types`)
+- **Zodiac Comparisons** (`/zodiac-comparisons`)
+- **Formulas & Assumptions** (`/formulas`)
+- **Notes / Essays** (`/notes`)
+- **Roadmap** (`/roadmap`)
 
-- **Landing / Intro**: concept-first explanation and entry point.
-- **Explorer**: orbit wheel + comparisons + timeline + conversions.
-- **About / Formulas**: assumptions, formulas, precision notes.
-- **Presets & Tools**: saved scenarios and export actions.
+## What Phase 5 adds
 
-## New in Phase 4
+### 1) Multi-page navigation and publishing structure
 
-### 1) Shareable URL state
+- New site-wide navigation with active-state highlighting
+- Mobile menu support
+- Route-level page rendering for educational sections + explorer
 
-Explorer state now syncs to readable query parameters, including:
+### 2) Educational knowledge pages
 
-- selected Gregorian timestamp
-- perihelion preset/manual anchor
-- zodiac order text
-- mode (equal vs constellation)
-- layer visibility toggles
-- active top section + explorer tab
+Long-form pages now cover:
 
-Use **Copy Share Link** to share an exact view.
+- core model definition
+- mechanics and step-by-step operation
+- year-type comparisons
+- zodiac-model comparisons
+- formula transparency and limitations
 
-### 2) Saved local presets
+### 3) Seeded notes/essays section
 
-Presets can now be stored in local browser storage:
+Included starter notes:
 
-- create from current state
-- rename custom presets
-- delete custom presets
-- apply built-ins + saved scenarios quickly
+- Why Start the Year at Perihelion?
+- Why 360 Still Matters
+- Equal Signs vs Real Constellations
+- Designing a Mean Orbital Calendar
+- Perihelion, Time, and Symbolic Order
 
-Built-in examples:
+### 4) Homepage storytelling upgrades
 
-- Default Perihelion Model
-- Capricorn Start System
-- Aries Start Experimental Mode
-- Comparison View
+The homepage now includes:
 
-### 3) Export tools
+- hero narrative framing
+- concise project statement
+- orbit wheel preview section
+- key principles and comparison snapshots
+- pathway buttons into explorer and knowledge pages
 
-Export options include:
+### 5) SEO and metadata foundations
 
-- orbit wheel as PNG image
-- presentation card image (title + key metrics + wheel)
-- full current state snapshot as JSON
-- month/sign mapping as CSV
+- dynamic page titles and descriptions
+- Open Graph title/description setup
+- semantic heading hierarchy on content pages
+- `public/sitemap.xml` and `public/robots.txt`
 
-### 4) Guided onboarding + usability
+## Formula summary
 
-- lightweight “How to read this wheel” helper
-- one-click jumps to **Today / Perihelion / Equinox / Aphelion midpoint**
-- “Start with today” shortcut
-- clearer information architecture via section navigation
+- `customDay = anomalisticYear / 360`
+- `customHour = customDay / 24`
+- `extraSecondsPerHour = customHour - 3600 seconds`
 
-### 5) Narrative comparison mode
+## Notes on model scope
 
-A dedicated interpretation panel summarizes the selected view in plain language:
-
-- position inside perihelion year
-- active month/sign in this model
-- tropical/sidereal comparison
-- relative position to perihelion/aphelion
-- current reference mode
-
-### 6) Presentation-quality orbit wheel
-
-Upgraded wheel styling for public-facing screenshots:
-
-- stronger ring hierarchy and typography
-- improved marker glow/clarity
-- polished gradients and labels
-- better export compatibility
-
-## Formulas and assumptions
-
-### Core mapping
-
-- anomalistic year (mean) is used as year baseline
-- custom day fraction = elapsed_anomalistic_fraction × 360
-- custom degree = elapsed_anomalistic_fraction × 360°
-- month index = floor(day_index / 30)
-
-### Comparison layers
-
-- tropical and sidereal overlays use stable approximation anchors (mean constants, equinox framing)
-- constellation mode is educational and uneven-span, not observatory precision boundaries
-
-### Why custom day > 24h
-
-Because ~365.2596 standard days are compressed into 360 custom days, each custom day represents slightly more than 24h of civil time.
-
-## Limitations
-
-- not a full ephemeris integration
-- uses mean year-length constants
-- intended for interpretive and educational comparison
-- not a civil-time replacement system
-
-## Screenshots
-
-Add screenshots from your environment to publish docs:
-
-- `docs/screenshots/landing.png` (placeholder)
-- `docs/screenshots/explorer-wheel.png` (placeholder)
-- `docs/screenshots/presets-tools.png` (placeholder)
+- Mean-model educational framing (not full ephemeris precision)
+- Explicit distinction between symbolic, geometric, and observational layers
+- Intended for exploration, comparison, and publication-oriented explanation
 
 ## Setup
 
@@ -131,27 +89,30 @@ npm run build
 npm run preview
 ```
 
-## Structure overview
+## Updated source structure
 
 ```txt
 src/
   components/
     orbit/
     panels/
-  data/
-    perihelion/
-    zodiac/
-  lib/
-    astronomy/
-    calendar/
+    site/
+      KnowledgePage.tsx
+      SiteLayout.tsx
+  content/
+    siteContent.ts
+  pages/
+    ExplorerPage.tsx
+    HomePage.tsx
+    NotesPage.tsx
   App.tsx
 ```
 
-## Roadmap ideas
+## Roadmap direction
 
-- optional cloud preset sync / user accounts
-- richer annotation layers (events, custom notes)
-- higher-fidelity astronomical integration option
-- printable report templates
-- collaborative shared scenarios
-
+- higher-fidelity astronomy engine options
+- richer constellation/boundary references
+- historical calendar comparison layers
+- publication/export enhancements
+- alternate sign-start experiments
+- observer sky integration

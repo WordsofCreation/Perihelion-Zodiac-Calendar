@@ -27,3 +27,5 @@ export const DEFAULT_CUSTOM_ZODIAC_ORDER = [
   'Scorpio',
   'Sagittarius'
 ];
+
+export const ARIES_START_EXPERIMENTAL_ORDER = [...TROPICAL_ZODIAC_ORDER];

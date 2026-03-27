@@ -1,94 +1,109 @@
 # Perihelion Zodiac Calendar
 
-An interactive React + TypeScript app for exploring a **perihelion-anchored 360-day calendar** against tropical, sidereal, and Gregorian references.
+An interactive React + TypeScript app for exploring a **perihelion-anchored 360-day calendar** as the primary system, with tropical, sidereal, and optional real-sky constellation comparison layers.
 
-## Phase 2 highlights
+## Phase 3 highlights
 
-Phase 2 upgrades the app from a prototype into a richer comparison and interpretation tool.
+Phase 3 turns the project into a stronger hybrid of calendar design + astronomy comparison while preserving the original premise.
 
-### 1) Perihelion year presets + manual anchor override
+### 1) Stronger astronomy calculation layer
 
-- Added curated perihelion UTC presets for multiple recent/upcoming years (`2021` through `2029`).
-- Added a year selector for fast anchor switching.
-- Added manual perihelion override toggle + freeform ISO timestamp input.
-- Switching the year/anchor updates:
-  - orbit position
-  - custom calendar conversion
-  - day/month/sign outputs
-  - time-until-next-perihelion values
+The app now uses a dedicated astronomy service architecture:
 
-## 2) Enhanced comparison layer
+- `src/lib/astronomy/constants.ts`
+- `src/lib/astronomy/engine.ts`
+- `src/lib/astronomy/types.ts`
 
-For a selected Gregorian timestamp, the app now displays side-by-side cards for:
+Core calculations now include:
 
-- Perihelion calendar (day/month/sign/degree)
-- Tropical zodiac (approx sign + degree)
-- Sidereal reference (approx sign + degree)
-- Gregorian date/time
+- anomalistic-year elapsed fraction from a selected perihelion anchor
+- custom 360-degree orbital position
+- tropical year fraction and reference degree
+- sidereal year fraction and reference degree
+- explicit cross-system degree offsets
 
-Layer toggles control both cards and wheel overlays.
+Precision scope is transparent:
 
-## 3) Orbit wheel boundary layering
+- **Exact in-app inputs:** selected Gregorian timestamp + selected perihelion anchor timestamp
+- **Mean-based constants:** year lengths (anomalistic/tropical/sidereal)
+- **Approximate framing:** equinox anchor for tropical/sidereal comparisons
 
-The wheel now uses multiple visual rings:
+### 2) Real constellation reference mode
 
-- Outer ring: custom perihelion 12 equal months
-- Middle ring: tropical zodiac boundaries (dashed amber)
-- Inner ring: sidereal reference boundaries (dashed cyan)
+Added an optional mode switch:
 
-Animated markers indicate active positions across systems.
+- **Equal Signs** (symbolic 12×30°)
+- **Constellation Reference** (uneven educational spans)
 
-## 4) Detail inspector panel
+Constellation mode includes:
 
-Added a scientific-style inspector for selected date/time:
+- a clear educational warning note
+- unequal span table
+- orbit wheel overlay ring for real-sky style boundaries
+- active constellation label in inspector/wheel
 
-- Gregorian date/time
-- Perihelion day/month/sign
-- 360-model degree
-- anomalistic-year fraction elapsed
-- tropical/sidereal degree references
-- perihelion-vs-tropical offset note
+### 3) Apsidal / perihelion awareness panel
 
-## 5) Month/sign reference table
-
-New full table for the custom 12-month system:
-
-- month number
-- sign name
-- custom day range
-- degree range
-- approximate Gregorian start/end for current perihelion year
-
-The active month row highlights as the selected date changes.
-
-## 6) Expanded explanation layer
-
-The about section now covers:
+New panel explains why year lengths differ:
 
 - anomalistic year
-- perihelion anchor logic
-- why the custom day is longer than 24h
-- mathematical elegance of equal segmentation
-- limits vs real unequal constellations
-- interpretive scope (not civil-time replacement)
+- tropical year
+- sidereal year
 
-## 7) UI polish
+Includes what each measures and why each matters for this model.
 
-- smoother marker animation
-- cleaner card and table layouts
-- stronger typography hierarchy
-- improved spacing and visual grouping
-- better mobile responsiveness while keeping the dark cosmic style
+### 4) Precision inspector
 
-## Astronomical precision scope (current phase)
+Advanced technical readout now includes:
 
-This phase intentionally uses modular approximations (not a full ephemeris engine):
+- Gregorian timestamp
+- active perihelion anchor
+- anomalistic elapsed fraction
+- custom day + custom month/sign
+- equal-sign degree
+- tropical and sidereal comparison degrees
+- constellation label (when enabled)
+- explicit precision/approximation notes
 
-- custom system: mean anomalistic-year abstraction
-- tropical reference: equinox-anchored approximation
-- sidereal reference: sidereal-year approximation + fixed ayanamsa offset
+### 5) Formula + assumptions drawer
 
-The code is structured to let future phases replace these with more exact formulas.
+Expandable transparency layer with:
+
+- custom day formula
+- anomalistic year basis
+- 360-day / 12×30 segmentation logic
+- extra seconds-per-hour derivation
+- limitations and approximation notes
+
+### 6) Better architecture for extension
+
+Refactored structure now separates concerns:
+
+- `src/lib/astronomy/*` for orbital/year model math
+- `src/lib/calendar/*` for calendar formatting/conversion utilities
+- `src/data/perihelion/*` for anchor data
+- `src/data/zodiac/*` for equal signs + uneven constellation spans
+- `src/components/orbit/*` for orbit visualization
+- `src/components/panels/*` for educational/inspector panels
+
+Legacy import paths are preserved via lightweight compatibility exports where practical.
+
+### 7) UI polish + interaction improvements
+
+- stronger layer legend clarity
+- clear active state for mode controls
+- denser technical data layout with improved readability
+- smoother marker transitions
+- richer mode messaging around symbolic vs real-sky framing
+
+### 8) Stretch goal included: animation mode
+
+The timeline scrubber now supports an optional play/pause mode that advances through the full custom year and updates:
+
+- orbit marker
+- month/sign mapping
+- comparison metrics
+- constellation reference output
 
 ## Setup
 
@@ -104,22 +119,6 @@ npm run build
 npm run preview
 ```
 
-## Project structure
-
-- `src/data/perihelionPresets.ts`: perihelion preset dataset and helpers.
-- `src/data/zodiac.ts`: custom/tropical zodiac ordering.
-- `src/data/comparisonMeta.ts`: comparison layer metadata.
-- `src/utils/calendarMath.ts`: calendar + comparison math utilities.
-- `src/components/OrbitWheel.tsx`: layered orbit comparison visualization.
-- `src/components/ComparisonPanel.tsx`: side-by-side comparison cards.
-- `src/components/DetailInspector.tsx`: detailed readout panel.
-- `src/components/MonthSignTable.tsx`: active month/sign reference table.
-- `src/components/ConversionPanel.tsx`: Gregorian/custom conversion tools.
-- `src/components/TimelineScrubber.tsx`: interactive date scrubber.
-- `src/components/TimeSystemPanel.tsx`: day/year-length comparison metrics.
-- `src/components/AboutPanel.tsx`: educational explanation panel.
-- `src/App.tsx`: phase orchestration, controls, and state wiring.
-
 ## Notes
 
-This project is a designed interpretive astronomy-calendar visualization and should not be used as a civil-time authority or high-precision astrometric engine.
+This project is an interpretive astronomy-calendar explorer. It is not an observatory-grade ephemeris, not an astrometry package, and not a civil-time authority.

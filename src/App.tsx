@@ -2,14 +2,16 @@ import { useEffect, useMemo, useState } from 'react';
 import { AboutPanel } from './components/AboutPanel';
 import { ComparisonPanel } from './components/ComparisonPanel';
 import { ConversionPanel } from './components/ConversionPanel';
-import { DetailInspector } from './components/DetailInspector';
 import { MonthSignTable } from './components/MonthSignTable';
-import { OrbitWheel } from './components/OrbitWheel';
-import { TimeSystemPanel } from './components/TimeSystemPanel';
 import { TimelineScrubber } from './components/TimelineScrubber';
-import { DEFAULT_PRESET_YEAR, PERIHELION_PRESETS, findPresetByYear } from './data/perihelionPresets';
-import { DEFAULT_CUSTOM_ZODIAC_ORDER } from './data/zodiac';
-import { CalendarConfig, gregorianToCustom, gregorianToSidereal, gregorianToTropical, normalizeZodiacOrder } from './utils/calendarMath';
+import { OrbitWheel } from './components/orbit/OrbitWheel';
+import { ApsidalAwarenessPanel } from './components/panels/ApsidalAwarenessPanel';
+import { ConstellationReferencePanel } from './components/panels/ConstellationReferencePanel';
+import { FormulaDrawer } from './components/panels/FormulaDrawer';
+import { PrecisionInspectorPanel } from './components/panels/PrecisionInspectorPanel';
+import { DEFAULT_PRESET_YEAR, PERIHELION_PRESETS, findPresetByYear } from './data/perihelion/anchors';
+import { DEFAULT_CUSTOM_ZODIAC_ORDER } from './data/zodiac/equalSigns';
+import { CalendarConfig, ZodiacMode, createAstronomySnapshot, normalizeZodiacOrder, sliderToGregorian } from './utils/calendarMath';
 
 type ComparisonState = Record<'perihelion' | 'tropical' | 'sidereal' | 'gregorian', boolean>;
 
@@ -22,6 +24,8 @@ export default function App() {
   const [zodiacRaw, setZodiacRaw] = useState(DEFAULT_CUSTOM_ZODIAC_ORDER.join(', '));
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [sliderDay, setSliderDay] = useState(0);
+  const [zodiacMode, setZodiacMode] = useState<ZodiacMode>('equal');
+  const [isPlaying, setIsPlaying] = useState(false);
   const [comparison, setComparison] = useState<ComparisonState>({
     perihelion: true,
     tropical: true,
@@ -47,21 +51,35 @@ export default function App() {
     [perihelionIso, zodiacRaw]
   );
 
-  const custom = useMemo(() => gregorianToCustom(selectedDate, config), [selectedDate, config]);
-  const tropical = useMemo(() => gregorianToTropical(selectedDate), [selectedDate]);
-  const sidereal = useMemo(() => gregorianToSidereal(selectedDate), [selectedDate]);
+  const snapshot = useMemo(() => createAstronomySnapshot(selectedDate, config, zodiacMode), [selectedDate, config, zodiacMode]);
 
   useEffect(() => {
-    setSliderDay(custom.fractionElapsed * 360);
-  }, [custom.fractionElapsed]);
+    setSliderDay(snapshot.custom.fractionElapsed * 360);
+  }, [snapshot.custom.fractionElapsed]);
+
+  useEffect(() => {
+    if (!isPlaying) {
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setSliderDay((prev) => {
+        const next = (prev + 0.6) % 360;
+        setSelectedDate(sliderToGregorian(next, config));
+        return next;
+      });
+    }, 45);
+
+    return () => window.clearInterval(timer);
+  }, [isPlaying, config.perihelionIso]);
 
   return (
     <main className="app-shell">
       <header>
-        <h1>Perihelion Zodiac Calendar • Phase 2</h1>
+        <h1>Perihelion Zodiac Calendar • Phase 3</h1>
         <p>
-          A perihelion-anchored exploratory instrument comparing a custom 360-day calendar with tropical, sidereal,
-          and Gregorian frames.
+          A perihelion-anchored astronomy explorer: custom 360-day primary calendar with anomalistic, tropical,
+          sidereal, and optional real-sky constellation reference layers.
         </p>
       </header>
 
@@ -98,28 +116,40 @@ export default function App() {
 
       <ComparisonPanel
         selectedDate={selectedDate}
-        custom={custom}
-        tropical={tropical}
-        sidereal={sidereal}
+        custom={snapshot.custom}
+        tropical={snapshot.tropical}
+        sidereal={snapshot.sidereal}
         showLayer={comparison}
         onToggleLayer={(key, checked) => setComparison((prev) => ({ ...prev, [key]: checked }))}
       />
 
+      <ConstellationReferencePanel mode={zodiacMode} onModeChange={setZodiacMode} activeLabel={snapshot.constellation?.label} />
+
       <OrbitWheel
-        degree={custom.degree}
-        tropicalDegree={tropical.degree}
-        siderealDegree={sidereal.degree}
+        degree={snapshot.custom.degree}
+        tropicalDegree={snapshot.tropical.degree}
+        siderealDegree={snapshot.sidereal.degree}
         zodiacOrder={config.zodiacOrder}
-        dayOfYear={custom.dayOfYear}
+        dayOfYear={snapshot.custom.dayOfYear}
         showTropical={comparison.tropical}
         showSidereal={comparison.sidereal}
+        zodiacMode={zodiacMode}
+        constellationLabel={snapshot.constellation?.label}
       />
 
-      <TimelineScrubber sliderDay={sliderDay} onSliderDay={setSliderDay} config={config} onSelectedDateChange={setSelectedDate} />
-      <DetailInspector selectedDate={selectedDate} custom={custom} tropical={tropical} sidereal={sidereal} />
-      <MonthSignTable config={config} activeMonth={custom.month} />
+      <TimelineScrubber
+        sliderDay={sliderDay}
+        onSliderDay={setSliderDay}
+        config={config}
+        onSelectedDateChange={setSelectedDate}
+        isPlaying={isPlaying}
+        onTogglePlaying={() => setIsPlaying((prev) => !prev)}
+      />
+      <PrecisionInspectorPanel snapshot={snapshot} />
+      <ApsidalAwarenessPanel />
+      <MonthSignTable config={config} activeMonth={snapshot.custom.month} />
       <ConversionPanel config={config} selectedDate={selectedDate} onSelectedDateChange={setSelectedDate} />
-      <TimeSystemPanel />
+      <FormulaDrawer />
       <AboutPanel />
     </main>
   );

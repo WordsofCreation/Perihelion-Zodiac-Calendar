@@ -1,109 +1,121 @@
 # Perihelion Zodiac Calendar
 
-An interactive React + TypeScript app for exploring a **perihelion-anchored 360-day calendar** as the primary system, with tropical, sidereal, and optional real-sky constellation comparison layers.
+A public-facing React + TypeScript explorer for a **perihelion-anchored calendar model**:
 
-## Phase 3 highlights
+- year starts at perihelion (anomalistic anchor)
+- 360 custom days
+- 12 equal zodiac months of 30 days each
+- overlays for tropical, sidereal, and optional constellation framing
 
-Phase 3 turns the project into a stronger hybrid of calendar design + astronomy comparison while preserving the original premise.
+## Phase 4 overview (publish-ready release)
 
-### 1) Stronger astronomy calculation layer
+Phase 4 turns the project from prototype into a shareable exploration tool with URL state, local presets, export features, onboarding, and presentation polish.
 
-The app now uses a dedicated astronomy service architecture:
+### Major modes
 
-- `src/lib/astronomy/constants.ts`
-- `src/lib/astronomy/engine.ts`
-- `src/lib/astronomy/types.ts`
+- **Landing / Intro**: concept-first explanation and entry point.
+- **Explorer**: orbit wheel + comparisons + timeline + conversions.
+- **About / Formulas**: assumptions, formulas, precision notes.
+- **Presets & Tools**: saved scenarios and export actions.
 
-Core calculations now include:
+## New in Phase 4
 
-- anomalistic-year elapsed fraction from a selected perihelion anchor
-- custom 360-degree orbital position
-- tropical year fraction and reference degree
-- sidereal year fraction and reference degree
-- explicit cross-system degree offsets
+### 1) Shareable URL state
 
-Precision scope is transparent:
+Explorer state now syncs to readable query parameters, including:
 
-- **Exact in-app inputs:** selected Gregorian timestamp + selected perihelion anchor timestamp
-- **Mean-based constants:** year lengths (anomalistic/tropical/sidereal)
-- **Approximate framing:** equinox anchor for tropical/sidereal comparisons
+- selected Gregorian timestamp
+- perihelion preset/manual anchor
+- zodiac order text
+- mode (equal vs constellation)
+- layer visibility toggles
+- active top section + explorer tab
 
-### 2) Real constellation reference mode
+Use **Copy Share Link** to share an exact view.
 
-Added an optional mode switch:
+### 2) Saved local presets
 
-- **Equal Signs** (symbolic 12×30°)
-- **Constellation Reference** (uneven educational spans)
+Presets can now be stored in local browser storage:
 
-Constellation mode includes:
+- create from current state
+- rename custom presets
+- delete custom presets
+- apply built-ins + saved scenarios quickly
 
-- a clear educational warning note
-- unequal span table
-- orbit wheel overlay ring for real-sky style boundaries
-- active constellation label in inspector/wheel
+Built-in examples:
 
-### 3) Apsidal / perihelion awareness panel
+- Default Perihelion Model
+- Capricorn Start System
+- Aries Start Experimental Mode
+- Comparison View
 
-New panel explains why year lengths differ:
+### 3) Export tools
 
-- anomalistic year
-- tropical year
-- sidereal year
+Export options include:
 
-Includes what each measures and why each matters for this model.
+- orbit wheel as PNG image
+- presentation card image (title + key metrics + wheel)
+- full current state snapshot as JSON
+- month/sign mapping as CSV
 
-### 4) Precision inspector
+### 4) Guided onboarding + usability
 
-Advanced technical readout now includes:
+- lightweight “How to read this wheel” helper
+- one-click jumps to **Today / Perihelion / Equinox / Aphelion midpoint**
+- “Start with today” shortcut
+- clearer information architecture via section navigation
 
-- Gregorian timestamp
-- active perihelion anchor
-- anomalistic elapsed fraction
-- custom day + custom month/sign
-- equal-sign degree
-- tropical and sidereal comparison degrees
-- constellation label (when enabled)
-- explicit precision/approximation notes
+### 5) Narrative comparison mode
 
-### 5) Formula + assumptions drawer
+A dedicated interpretation panel summarizes the selected view in plain language:
 
-Expandable transparency layer with:
+- position inside perihelion year
+- active month/sign in this model
+- tropical/sidereal comparison
+- relative position to perihelion/aphelion
+- current reference mode
 
-- custom day formula
-- anomalistic year basis
-- 360-day / 12×30 segmentation logic
-- extra seconds-per-hour derivation
-- limitations and approximation notes
+### 6) Presentation-quality orbit wheel
 
-### 6) Better architecture for extension
+Upgraded wheel styling for public-facing screenshots:
 
-Refactored structure now separates concerns:
+- stronger ring hierarchy and typography
+- improved marker glow/clarity
+- polished gradients and labels
+- better export compatibility
 
-- `src/lib/astronomy/*` for orbital/year model math
-- `src/lib/calendar/*` for calendar formatting/conversion utilities
-- `src/data/perihelion/*` for anchor data
-- `src/data/zodiac/*` for equal signs + uneven constellation spans
-- `src/components/orbit/*` for orbit visualization
-- `src/components/panels/*` for educational/inspector panels
+## Formulas and assumptions
 
-Legacy import paths are preserved via lightweight compatibility exports where practical.
+### Core mapping
 
-### 7) UI polish + interaction improvements
+- anomalistic year (mean) is used as year baseline
+- custom day fraction = elapsed_anomalistic_fraction × 360
+- custom degree = elapsed_anomalistic_fraction × 360°
+- month index = floor(day_index / 30)
 
-- stronger layer legend clarity
-- clear active state for mode controls
-- denser technical data layout with improved readability
-- smoother marker transitions
-- richer mode messaging around symbolic vs real-sky framing
+### Comparison layers
 
-### 8) Stretch goal included: animation mode
+- tropical and sidereal overlays use stable approximation anchors (mean constants, equinox framing)
+- constellation mode is educational and uneven-span, not observatory precision boundaries
 
-The timeline scrubber now supports an optional play/pause mode that advances through the full custom year and updates:
+### Why custom day > 24h
 
-- orbit marker
-- month/sign mapping
-- comparison metrics
-- constellation reference output
+Because ~365.2596 standard days are compressed into 360 custom days, each custom day represents slightly more than 24h of civil time.
+
+## Limitations
+
+- not a full ephemeris integration
+- uses mean year-length constants
+- intended for interpretive and educational comparison
+- not a civil-time replacement system
+
+## Screenshots
+
+Add screenshots from your environment to publish docs:
+
+- `docs/screenshots/landing.png` (placeholder)
+- `docs/screenshots/explorer-wheel.png` (placeholder)
+- `docs/screenshots/presets-tools.png` (placeholder)
 
 ## Setup
 
@@ -112,13 +124,34 @@ npm install
 npm run dev
 ```
 
-Build for production:
+Production build:
 
 ```bash
 npm run build
 npm run preview
 ```
 
-## Notes
+## Structure overview
 
-This project is an interpretive astronomy-calendar explorer. It is not an observatory-grade ephemeris, not an astrometry package, and not a civil-time authority.
+```txt
+src/
+  components/
+    orbit/
+    panels/
+  data/
+    perihelion/
+    zodiac/
+  lib/
+    astronomy/
+    calendar/
+  App.tsx
+```
+
+## Roadmap ideas
+
+- optional cloud preset sync / user accounts
+- richer annotation layers (events, custom notes)
+- higher-fidelity astronomical integration option
+- printable report templates
+- collaborative shared scenarios
+

@@ -320,3 +320,116 @@ button,
   border-top: 1px solid #2f3e69;
   padding-top: 0.9rem;
 }
+
+.phase4-shell {
+  padding-bottom: 2.4rem;
+}
+
+.hero-header {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.nav-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.nav-actions .mode-btn {
+  width: auto;
+}
+
+.helper-note {
+  margin: 0;
+  color: #87f4c0;
+}
+
+.landing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0.9rem;
+}
+
+.landing-grid article {
+  border: 1px solid #304375;
+  border-radius: 12px;
+  padding: 0.9rem;
+  background: rgba(17, 28, 60, 0.65);
+}
+
+.enter-btn {
+  grid-column: 1 / -1;
+  max-width: 260px;
+}
+
+.quick-jumps {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.quick-jumps button {
+  width: auto;
+  padding: 0.45rem 0.8rem;
+}
+
+.onboarding-card {
+  margin-top: 0.9rem;
+  border: 1px solid #4862a5;
+  background: rgba(19, 40, 86, 0.55);
+  border-radius: 10px;
+  padding: 0.8rem;
+}
+
+.onboarding-card ul {
+  margin-top: 0.5rem;
+  color: #c6d3ff;
+}
+
+.narrative-panel p {
+  line-height: 1.7;
+  color: #d7e2ff;
+  margin: 0;
+}
+
+.orbit-svg {
+  width: min(96vw, 620px);
+}
+
+.orbit-segment-custom {
+  stroke-width: 20;
+}
+
+.orbit-segment-tropical {
+  stroke-width: 12;
+}
+
+.orbit-segment-sidereal {
+  stroke-width: 8;
+}
+
+.orbit-label {
+  font-size: 10px;
+  font-weight: 550;
+  letter-spacing: 0.03em;
+}
+
+.perihelion-label {
+  font-size: 12px;
+}
+
+.marker-line {
+  stroke-width: 2.2;
+  filter: drop-shadow(0 0 6px rgba(104, 241, 255, 0.9));
+}
+
+.marker-dot-custom {
+  filter: drop-shadow(0 0 8px rgba(104, 241, 255, 0.85));
+}
+
+.marker-dot-tropical,
+.marker-dot-sidereal {
+  filter: drop-shadow(0 0 6px rgba(255, 214, 153, 0.5));
+}

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { DataPulseStudio } from '../components/DataPulseStudio';
 import { DEFAULT_PRESET_YEAR, PERIHELION_PRESETS, findPresetByYear } from '../data/perihelion/anchors';
 import { ARIES_START_EXPERIMENTAL_ORDER, DEFAULT_CUSTOM_ZODIAC_ORDER } from '../data/zodiac/equalSigns';
 import {
@@ -189,20 +190,23 @@ export default function InstrumentPage() {
       </section>
 
       {tab === 'dashboard' && (
-        <section className="panel">
-          <h2>Year Summary Dashboard</h2>
-          <div className="comparison-grid">
-            <article className="comparison-card"><h3>Active perihelion anchor</h3><p>{perihelionIso}</p></article>
-            <article className="comparison-card"><h3>Current custom day</h3><p>{custom.dayOfYear} / 360</p></article>
-            <article className="comparison-card"><h3>Current month / sign</h3><p>{custom.month} • {custom.sign}</p></article>
-            <article className="comparison-card"><h3>Orbital degree</h3><p>{custom.degree.toFixed(3)}°</p></article>
-            <article className="comparison-card"><h3>Anomalistic year fraction</h3><p>{(custom.fractionElapsed * 100).toFixed(4)}%</p></article>
-            <article className="comparison-card"><h3>Next perihelion countdown</h3><p>{formatDuration(custom.untilNextPerihelionMs)}</p></article>
-            <article className="comparison-card"><h3>Next aphelion marker</h3><p>Custom day 180 ({customToGregorian(6, 30, 0, config).toUTCString()})</p></article>
-            <article className="comparison-card"><h3>Selected year preset</h3><p>{selectedYear}</p></article>
-            <article className="comparison-card"><h3>System modes</h3><p>Mean-time model • {signMode} sign order</p></article>
-          </div>
-        </section>
+        <>
+          <DataPulseStudio snapshot={snapshot} />
+          <section className="panel">
+            <h2>Year Summary Dashboard</h2>
+            <div className="comparison-grid">
+              <article className="comparison-card"><h3>Active perihelion anchor</h3><p>{perihelionIso}</p></article>
+              <article className="comparison-card"><h3>Current custom day</h3><p>{custom.dayOfYear} / 360</p></article>
+              <article className="comparison-card"><h3>Current month / sign</h3><p>{custom.month} • {custom.sign}</p></article>
+              <article className="comparison-card"><h3>Orbital degree</h3><p>{custom.degree.toFixed(3)}°</p></article>
+              <article className="comparison-card"><h3>Anomalistic year fraction</h3><p>{(custom.fractionElapsed * 100).toFixed(4)}%</p></article>
+              <article className="comparison-card"><h3>Next perihelion countdown</h3><p>{formatDuration(custom.untilNextPerihelionMs)}</p></article>
+              <article className="comparison-card"><h3>Next aphelion marker</h3><p>Custom day 180 ({customToGregorian(6, 30, 0, config).toUTCString()})</p></article>
+              <article className="comparison-card"><h3>Selected year preset</h3><p>{selectedYear}</p></article>
+              <article className="comparison-card"><h3>System modes</h3><p>Mean-time model • {signMode} sign order</p></article>
+            </div>
+          </section>
+        </>
       )}
 
       {tab === 'clock' && (

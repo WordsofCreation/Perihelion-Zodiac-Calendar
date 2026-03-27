@@ -13,6 +13,12 @@ interface SiteLayoutProps {
   children: ReactNode;
 }
 
+function toBaseHref(path: string) {
+  const base = import.meta.env.BASE_URL;
+  const normalizedPath = path.replace(/^\/+/, '');
+  return normalizedPath ? `${base}${normalizedPath}` : base;
+}
+
 export function SiteLayout({ currentPath, onNavigate, navItems, children }: SiteLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -24,7 +30,7 @@ export function SiteLayout({ currentPath, onNavigate, navItems, children }: Site
   return (
     <div className="site-shell">
       <header className="site-header panel">
-        <a href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }} className="brand-link">
+        <a href={toBaseHref('/')} onClick={(e) => { e.preventDefault(); navigate('/'); }} className="brand-link">
           <strong>Perihelion Zodiac Calendar</strong>
           <span>Explorer + knowledge atlas</span>
         </a>
@@ -35,7 +41,7 @@ export function SiteLayout({ currentPath, onNavigate, navItems, children }: Site
           {navItems.map((item) => (
             <a
               key={item.path}
-              href={item.path}
+              href={toBaseHref(item.path)}
               onClick={(e) => {
                 e.preventDefault();
                 navigate(item.path);

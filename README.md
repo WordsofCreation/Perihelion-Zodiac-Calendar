@@ -66,16 +66,27 @@ npm run preview
 This project is a mathematical and interpretive calendar/time system for exploration and reference.
 It is not intended as a replacement for civil time standards or ephemeris-grade astrodynamics software.
 
+## Deployment configuration (current default)
 
-## Root-site deployment configuration
+This project is currently configured for a **GitHub Pages project site** at:
 
-This project is configured for deployment at the **site root** (`/`).
+- `https://wordsofcreation.github.io/Perihelion-Zodiac-Calendar/`
 
-- Vite `base` is set to `/` in `vite.config.ts`, so built asset URLs resolve from the root domain.
-- Static files in `public/` (for example `robots.txt` and `sitemap.xml`) are emitted at the root of the built site.
-- Navigation and in-app URL handling use root-based paths such as `/` and `/explorer`.
+Vite uses `/Perihelion-Zodiac-Calendar/` as the default `base`, so built assets resolve correctly from the repository subpath.
 
-### Deploy checklist (root publish)
+## Future root-site deployment
+
+The project can still be deployed at the root (`/`) when needed.
+
+Use an override at build time:
+
+```bash
+VITE_BASE_PATH=/ npm run build
+```
+
+You can also point to another subpath by setting `VITE_BASE_PATH` to that path.
+
+## Deploy checklist (GitHub Pages project site)
 
 1. Build the project:
 
@@ -83,9 +94,6 @@ This project is configured for deployment at the **site root** (`/`).
    npm run build
    ```
 
-2. Publish the contents of `dist/` to your host's root document path.
-3. If you later enable true multi-route client-side routing, configure your host to rewrite unknown routes to `index.html` so deep links can refresh correctly.
-
-### If migrating from project-page deployment
-
-If you previously used a repository subpath (for example `/repo-name/`), remove any subpath-specific base URL settings and republish. This repository now targets root deployment only.
+2. Publish the contents of `dist/` to the `gh-pages` branch (or your configured Pages publish target).
+3. Confirm generated asset URLs begin with `/Perihelion-Zodiac-Calendar/`.
+4. Confirm `sitemap.xml` and `robots.txt` point at the project-site URL.

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://perihelion-zodiac-calendar.example/sitemap.xml
+Sitemap: https://wordsofcreation.github.io/Perihelion-Zodiac-Calendar/sitemap.xml

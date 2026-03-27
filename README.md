@@ -1,79 +1,47 @@
 # Perihelion Zodiac Calendar
 
-A public-facing React + TypeScript website for the **Perihelion Zodiac Calendar**: an educational calendar model that starts each year at perihelion and maps the anomalistic cycle into a 360-day symbolic structure.
+A React + TypeScript application focused on a **clean, data-driven perihelion calendar and time instrument**.
 
-## Phase 5 overview (publishable website edition)
+## Product focus
 
-Phase 5 expands the project from an app-centric experience into a full multi-page publication layer with long-form educational content, comparison framing, notes/essays, roadmap planning, and SEO foundations.
+This phase intentionally centers on:
 
-## Top-level site structure
+- perihelion-anchored custom year logic
+- custom clock / custom day system
+- Gregorian ↔ perihelion conversion
+- transparent astronomy references
+- formulas, assumptions, and settings controls
 
-- **Home** (`/`)
-- **Explorer** (`/explorer`)
-- **About the System** (`/about-system`)
-- **How It Works** (`/how-it-works`)
-- **Year Types / Astronomy** (`/year-types`)
-- **Zodiac Comparisons** (`/zodiac-comparisons`)
-- **Formulas & Assumptions** (`/formulas`)
-- **Notes / Essays** (`/notes`)
-- **Roadmap** (`/roadmap`)
+It explicitly avoids star maps, observatory views, and sky-rendering features.
 
-## What Phase 5 adds
+## Core model
 
-### 1) Multi-page navigation and publishing structure
+- Year start = exact perihelion anchor instant
+- Governing year type = anomalistic year
+- 360 equal custom days per year
+- 12 equal months of 30 days each
+- Zodiac signs assigned by month order
+- Custom day length ≈ 24h 21m 2.31s
+- Extra time beyond 24h distributed as ≈ 52.59625 extra seconds per hour
 
-- New site-wide navigation with active-state highlighting
-- Mobile menu support
-- Route-level page rendering for educational sections + explorer
+## Application sections
 
-### 2) Educational knowledge pages
+- **Dashboard**: command-center metrics for active year state
+- **Clock**: live custom clock + Gregorian comparison
+- **Calendar**: full 12×30 custom-year browsing (list + grid)
+- **Converter**: Gregorian ↔ perihelion conversions
+- **Astronomical Considerations**: key reference concepts and caveats
+- **Formulas / Assumptions**: transparent derivations and limits
+- **Settings**: presets, overrides, zodiac mode controls, reset defaults
 
-Long-form pages now cover:
+## Included capabilities
 
-- core model definition
-- mechanics and step-by-step operation
-- year-type comparisons
-- zodiac-model comparisons
-- formula transparency and limitations
-
-### 3) Seeded notes/essays section
-
-Included starter notes:
-
-- Why Start the Year at Perihelion?
-- Why 360 Still Matters
-- Equal Signs vs Real Constellations
-- Designing a Mean Orbital Calendar
-- Perihelion, Time, and Symbolic Order
-
-### 4) Homepage storytelling upgrades
-
-The homepage now includes:
-
-- hero narrative framing
-- concise project statement
-- orbit wheel preview section
-- key principles and comparison snapshots
-- pathway buttons into explorer and knowledge pages
-
-### 5) SEO and metadata foundations
-
-- dynamic page titles and descriptions
-- Open Graph title/description setup
-- semantic heading hierarchy on content pages
-- `public/sitemap.xml` and `public/robots.txt`
-
-## Formula summary
-
-- `customDay = anomalisticYear / 360`
-- `customHour = customDay / 24`
-- `extraSecondsPerHour = customHour - 3600 seconds`
-
-## Notes on model scope
-
-- Mean-model educational framing (not full ephemeris precision)
-- Explicit distinction between symbolic, geometric, and observational layers
-- Intended for exploration, comparison, and publication-oriented explanation
+- Live “now” mode and selected timestamp mode
+- Perihelion year presets and manual perihelion override
+- Capricorn-start default mode and Aries-start experimental mode
+- Custom zodiac order support
+- Active month/sign highlighting in tables
+- Local persistence of app settings
 
 ## Setup
 
@@ -89,30 +57,7 @@ npm run build
 npm run preview
 ```
 
-## Updated source structure
+## Notes on scope
 
-```txt
-src/
-  components/
-    orbit/
-    panels/
-    site/
-      KnowledgePage.tsx
-      SiteLayout.tsx
-  content/
-    siteContent.ts
-  pages/
-    ExplorerPage.tsx
-    HomePage.tsx
-    NotesPage.tsx
-  App.tsx
-```
-
-## Roadmap direction
-
-- higher-fidelity astronomy engine options
-- richer constellation/boundary references
-- historical calendar comparison layers
-- publication/export enhancements
-- alternate sign-start experiments
-- observer sky integration
+This project is a mathematical and interpretive calendar/time system for exploration and reference.
+It is not intended as a replacement for civil time standards or ephemeris-grade astrodynamics software.

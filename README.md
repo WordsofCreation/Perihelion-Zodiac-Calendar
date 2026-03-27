@@ -92,8 +92,9 @@ You can also point to another subpath by setting `VITE_BASE_PATH` to that path.
 2. Upload the generated `dist/` folder as the Pages artifact in GitHub Actions.
 3. Deploy with `actions/deploy-pages`.
 4. In **Settings → Pages**, set **Source** to **GitHub Actions**.
-5. Keep `.github/workflows/deploy-pages.yml` on `main`; each push to `main` builds and deploys automatically.
-6. Confirm generated asset URLs in `dist/index.html` are relative (for example, `./assets/...`) unless you intentionally set `VITE_BASE_PATH`.
-7. Confirm `sitemap.xml` and `robots.txt` point at the project-site URL.
+5. Commit `package-lock.json` so the workflow's `npm ci` step can install dependencies reliably.
+6. Keep `.github/workflows/deploy-pages.yml` on `main`; each push to `main` builds and deploys automatically.
+7. Confirm generated asset URLs in `dist/index.html` are relative (for example, `./assets/...`) unless you intentionally set `VITE_BASE_PATH`.
+8. Confirm `sitemap.xml` and `robots.txt` point at the project-site URL.
 
 If Pages is set to “Deploy from a branch”, GitHub will serve the repo source `index.html` directly (which references `/src/main.tsx`), and the browser will render a blank page because TypeScript/TSX source is not bundled for production.

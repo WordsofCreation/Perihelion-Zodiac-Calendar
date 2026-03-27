@@ -106,6 +106,7 @@ export default function InstrumentPage() {
   const [signMode, setSignMode] = useState<SignOrderMode>(stored.signMode ?? 'capricorn');
   const [zodiacRaw, setZodiacRaw] = useState(stored.zodiacRaw ?? DEFAULT_CUSTOM_ZODIAC_ORDER.join(', '));
   const [calendarView, setCalendarView] = useState<CalendarView>('list');
+  const [activeCalendarMonth, setActiveCalendarMonth] = useState(1);
   const [reverseMonth, setReverseMonth] = useState(1);
   const [reverseDay, setReverseDay] = useState(1);
   const [reverseFraction, setReverseFraction] = useState(0);
@@ -139,6 +140,9 @@ export default function InstrumentPage() {
   const custom = snapshot.custom;
   const dayFraction = (custom.fractionElapsed * CUSTOM_YEAR_DAYS) % 1;
   const customSeconds = dayFraction * 24 * 3600;
+  const customHour = Math.floor(customSeconds / 3600);
+  const customMinute = Math.floor((customSeconds % 3600) / 60);
+  const customSecond = Math.floor(customSeconds % 60);
   const reverseDate = customToGregorian(reverseMonth, reverseDay, reverseFraction, config);
 
   const monthRows = useMemo(
@@ -162,6 +166,8 @@ export default function InstrumentPage() {
   );
 
   const anchors = getAnchorContext(selectedDate);
+  const activeMonthInfo = monthRows.find((row) => row.month === activeCalendarMonth) ?? monthRows[0];
+  const activeMonthDays = Array.from({ length: DAYS_PER_MONTH }, (_, index) => index + 1);
 
   return (
     <div className="app-shell instrument-shell">
@@ -207,6 +213,11 @@ export default function InstrumentPage() {
             <div className="clock-card">
               <h3>Perihelion Time (live)</h3>
               <p className="clock-face">{formatClock(customSeconds)}</p>
+              <div className="comparison-grid">
+                <article className="comparison-card"><h3>Hour</h3><p>{customHour}</p></article>
+                <article className="comparison-card"><h3>Minute</h3><p>{customMinute}</p></article>
+                <article className="comparison-card"><h3>Second</h3><p>{customSecond}</p></article>
+              </div>
               <ul className="metric-list">
                 <li>Custom day number: {custom.dayOfYear}</li>
                 <li>Custom month: {custom.month}</li>
@@ -252,6 +263,16 @@ export default function InstrumentPage() {
             <button onClick={() => setCalendarView('list')} className={calendarView === 'list' ? 'mode-btn active' : 'mode-btn'}>List view</button>
             <button onClick={() => setCalendarView('grid')} className={calendarView === 'grid' ? 'mode-btn active' : 'mode-btn'}>Grid view</button>
           </div>
+          <label>
+            Browse month
+            <select value={activeCalendarMonth} onChange={(event) => setActiveCalendarMonth(Number(event.target.value))}>
+              {monthRows.map((row) => (
+                <option key={row.month} value={row.month}>
+                  Month {row.month} • {row.sign}
+                </option>
+              ))}
+            </select>
+          </label>
 
           {calendarView === 'list' && (
             <div className="table-wrap">
@@ -291,6 +312,22 @@ export default function InstrumentPage() {
               ))}
             </div>
           )}
+
+          <h3>Month detail • {activeMonthInfo.sign}</h3>
+          <p className="inspector-note">
+            Approx Gregorian span: {activeMonthInfo.startGregorian.toUTCString()} → {activeMonthInfo.endGregorian.toUTCString()}
+          </p>
+          <div className="month-day-grid">
+            {activeMonthDays.map((day) => {
+              const isCurrent = custom.month === activeCalendarMonth && custom.dayOfMonth === day;
+              return (
+                <article key={day} className={`comparison-card month-day-cell ${isCurrent ? 'active-row' : ''}`}>
+                  <h3>Day {day}</h3>
+                  <p>Custom day #{(activeCalendarMonth - 1) * DAYS_PER_MONTH + day}</p>
+                </article>
+              );
+            })}
+          </div>
         </section>
       )}
 
@@ -345,6 +382,34 @@ export default function InstrumentPage() {
             <article className="comparison-card"><h3>Year-start difference</h3><p>Perihelion-based starts differ from sidereal/tropical starts because anchors are physically different.</p></article>
             <article className="comparison-card"><h3>Orbital-speed variation</h3><p>True orbital speed varies through the year; this interface uses mean values.</p></article>
             <article className="comparison-card"><h3>Interpretive scope</h3><p>This is a mathematical calendar/time instrument, not a civil-time replacement standard.</p></article>
+          </div>
+          <div className="table-wrap">
+            <table className="compare-table month-table">
+              <thead>
+                <tr>
+                  <th>Reference type</th>
+                  <th>Anchor basis</th>
+                  <th>Mean year length</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Anomalistic year</td>
+                  <td>Perihelion → perihelion</td>
+                  <td>{ANOMALISTIC_YEAR_DAYS.toFixed(6)} days</td>
+                </tr>
+                <tr>
+                  <td>Tropical year</td>
+                  <td>Seasonal cycle (equinox framing)</td>
+                  <td>{TROPICAL_YEAR_DAYS.toFixed(6)} days</td>
+                </tr>
+                <tr>
+                  <td>Sidereal year</td>
+                  <td>Background fixed stars</td>
+                  <td>{SIDEREAL_YEAR_DAYS.toFixed(6)} days</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
       )}

@@ -90,12 +90,9 @@ You can also point to another subpath by setting `VITE_BASE_PATH` to that path.
 
 ## Deploy checklist (GitHub Pages project site)
 
-1. Build the project:
-
-   ```bash
-   npm run build
-   ```
-
-2. Publish the contents of `dist/` to the `gh-pages` branch (or your configured Pages publish target).
+1. In **Settings → Pages**, set **Build and deployment** to **GitHub Actions**.
+2. Keep `.github/workflows/deploy-pages.yml` on `main`; each push to `main` builds and deploys `dist/` automatically.
 3. Confirm generated asset URLs begin with `/Perihelion-Zodiac-Calendar/`.
 4. Confirm `sitemap.xml` and `robots.txt` point at the project-site URL.
+
+If Pages is set to “Deploy from a branch”, GitHub will serve the repo source `index.html` directly (which references `/src/main.tsx`), and the browser will render a blank page because TypeScript/TSX source is not bundled for production.

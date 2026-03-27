@@ -65,3 +65,27 @@ npm run preview
 
 This project is a mathematical and interpretive calendar/time system for exploration and reference.
 It is not intended as a replacement for civil time standards or ephemeris-grade astrodynamics software.
+
+
+## Root-site deployment configuration
+
+This project is configured for deployment at the **site root** (`/`).
+
+- Vite `base` is set to `/` in `vite.config.ts`, so built asset URLs resolve from the root domain.
+- Static files in `public/` (for example `robots.txt` and `sitemap.xml`) are emitted at the root of the built site.
+- Navigation and in-app URL handling use root-based paths such as `/` and `/explorer`.
+
+### Deploy checklist (root publish)
+
+1. Build the project:
+
+   ```bash
+   npm run build
+   ```
+
+2. Publish the contents of `dist/` to your host's root document path.
+3. If you later enable true multi-route client-side routing, configure your host to rewrite unknown routes to `index.html` so deep links can refresh correctly.
+
+### If migrating from project-page deployment
+
+If you previously used a repository subpath (for example `/repo-name/`), remove any subpath-specific base URL settings and republish. This repository now targets root deployment only.

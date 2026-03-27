@@ -72,18 +72,16 @@ This project is currently configured for a **GitHub Pages project site** at:
 
 - `https://wordsofcreation.github.io/Perihelion-Zodiac-Calendar/`
 
-Vite uses `/Perihelion-Zodiac-Calendar/` as the production `base`, so built assets resolve correctly from the repository subpath.
+Vite uses a relative production `base` (`./`) so built assets resolve correctly regardless of whether Pages serves the site from a repository subpath or root.
 
 For local development (`npm run dev`), Vite serves from root (`/`) so local routing and asset loading work normally.
 
-## Future root-site deployment
+## Optional base-path override
 
-The project can still be deployed at the root (`/`) when needed.
-
-Use an override at build time:
+If you want explicit absolute asset URLs, you can still set a custom `VITE_BASE_PATH` at build time:
 
 ```bash
-VITE_BASE_PATH=/ npm run build
+VITE_BASE_PATH=/Perihelion-Zodiac-Calendar/ npm run build
 ```
 
 You can also point to another subpath by setting `VITE_BASE_PATH` to that path.
@@ -95,7 +93,7 @@ You can also point to another subpath by setting `VITE_BASE_PATH` to that path.
 3. Deploy with `actions/deploy-pages`.
 4. In **Settings → Pages**, set **Source** to **GitHub Actions**.
 5. Keep `.github/workflows/deploy-pages.yml` on `main`; each push to `main` builds and deploys automatically.
-6. Confirm generated asset URLs begin with `/Perihelion-Zodiac-Calendar/`.
+6. Confirm generated asset URLs in `dist/index.html` are relative (for example, `./assets/...`) unless you intentionally set `VITE_BASE_PATH`.
 7. Confirm `sitemap.xml` and `robots.txt` point at the project-site URL.
 
 If Pages is set to “Deploy from a branch”, GitHub will serve the repo source `index.html` directly (which references `/src/main.tsx`), and the browser will render a blank page because TypeScript/TSX source is not bundled for production.

@@ -1,10 +1,16 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-const DEFAULT_PROJECT_BASE = '/Perihelion-Zodiac-Calendar/';
-
 function normalizeBasePath(rawBase: string | undefined): string {
-  const candidate = (rawBase ?? DEFAULT_PROJECT_BASE).trim();
+  if (!rawBase) {
+    return './';
+  }
+
+  const candidate = rawBase.trim();
+  if (candidate === '.' || candidate === './') {
+    return './';
+  }
+
   const withLeadingSlash = candidate.startsWith('/') ? candidate : `/${candidate}`;
   const withTrailingSlash = withLeadingSlash.endsWith('/') ? withLeadingSlash : `${withLeadingSlash}/`;
   return withTrailingSlash.replace(/\/+/g, '/');

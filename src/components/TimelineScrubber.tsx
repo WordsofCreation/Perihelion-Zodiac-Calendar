@@ -5,15 +5,29 @@ interface TimelineScrubberProps {
   onSliderDay: (value: number) => void;
   config: CalendarConfig;
   onSelectedDateChange: (date: Date) => void;
+  isPlaying: boolean;
+  onTogglePlaying: () => void;
 }
 
-export function TimelineScrubber({ sliderDay, onSliderDay, config, onSelectedDateChange }: TimelineScrubberProps) {
+export function TimelineScrubber({
+  sliderDay,
+  onSliderDay,
+  config,
+  onSelectedDateChange,
+  isPlaying,
+  onTogglePlaying
+}: TimelineScrubberProps) {
   const date = sliderToGregorian(sliderDay, config);
   const mapped = gregorianToCustom(date, config);
 
   return (
     <section className="panel">
       <h2>Timeline / Year Scrubber</h2>
+      <div className="timeline-header">
+        <button type="button" className={isPlaying ? 'mode-btn active' : 'mode-btn'} onClick={onTogglePlaying}>
+          {isPlaying ? 'Pause animation' : 'Play full-year animation'}
+        </button>
+      </div>
       <label>
         Scrub day in 360-day year: {sliderDay.toFixed(2)}
         <input

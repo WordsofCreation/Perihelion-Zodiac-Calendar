@@ -275,3 +275,48 @@ button,
     padding: 0.8rem;
   }
 }
+
+.mode-switch {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
+}
+
+.mode-btn {
+  width: auto;
+  padding: 0.45rem 0.8rem;
+  background: #16244a;
+  border: 1px solid #3b4d82;
+}
+
+.mode-btn.active {
+  background: linear-gradient(90deg, #2e5bff, #5f72ff);
+  border-color: #7f99ff;
+}
+
+.legend-text {
+  color: #98b0ef;
+}
+
+.orbit-segment-constellation {
+  stroke: #8cf3aa;
+  stroke-width: 7;
+  opacity: 0.7;
+  fill: none;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.6rem;
+}
+
+.drawer-toggle {
+  text-align: left;
+}
+
+.drawer-body {
+  margin-top: 0.9rem;
+  border-top: 1px solid #2f3e69;
+  padding-top: 0.9rem;
+}

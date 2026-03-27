@@ -37,10 +37,14 @@ It explicitly avoids star maps, observatory views, and sky-rendering features.
 ## Included capabilities
 
 - Live “now” mode and selected timestamp mode
+- Prominent custom clock with custom hour/minute/second and Gregorian comparison
 - Perihelion year presets and manual perihelion override
 - Capricorn-start default mode and Aries-start experimental mode
 - Custom zodiac order support
-- Active month/sign highlighting in tables
+- Full 12-month/360-day calendar with list, year-grid, and month-day browse
+- Active month/sign/day highlighting in tables and cards
+- Gregorian ↔ custom conversions with elapsed-year and orbital-degree outputs
+- Astronomical considerations and formula transparency panels
 - Local persistence of app settings
 
 ## Setup

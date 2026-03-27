@@ -255,6 +255,10 @@ button,
   background: rgba(70, 135, 255, 0.22);
 }
 
+.active-row {
+  background: rgba(70, 135, 255, 0.22);
+}
+
 .about-grid {
   display: grid;
   gap: 0.8rem;
@@ -623,4 +627,15 @@ button,
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: 0.65rem;
+}
+
+.month-day-grid {
+  margin-top: 0.7rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.55rem;
+}
+
+.month-day-cell h3 {
+  margin-bottom: 0.25rem;
 }
